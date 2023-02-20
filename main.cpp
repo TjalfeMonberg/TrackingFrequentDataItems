@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <vector>
 #include <regex>
 #include <set>
@@ -52,7 +51,7 @@ vector<string> tokenizeCAIDA() {
     // Get the input from the input file until EOF
     while (getline(myfile, temp)) {
         // regex expression for pattern to be searched
-        regex rgx(R"(([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+))");
+        regex rgx(R"(\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b)");
 
         smatch match;
 
@@ -65,20 +64,17 @@ vector<string> tokenizeCAIDA() {
 
     }
 
-    // Removing duplicates, since I can't seem to figure out, when it gets duplicated
-    sort( outputs.begin(), outputs.end() );
-    outputs.erase( unique( outputs.begin(), outputs.end() ), outputs.end() );
-
-    for (auto x : outputs) {
-        cout << x << "\n";
-    }
+    // Printing the elements of the vector (Commeted out most of the time)
+    //for (const auto& x : outputs) {
+        //cout << x << "\n";
+    //}
 
     return outputs;
 }
 
 void HashMap(const vector<string>& values) {
 
-    map<string, int> m;
+    unordered_map<string, int> m;
 
     // Inserting the values with a unique int
     for (const auto & value : values) {
@@ -91,15 +87,27 @@ void HashMap(const vector<string>& values) {
     }
 
     // For printing the content of the hashmap
-    //for (auto const &pair: m) {
-        //std::cout << "{" << pair.first << ": " << pair.second << "}\n";
-    //}
+    for (auto const &pair: m) {
+        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
+    }
+
+    unsigned currentMax = 0;
+    string arg_max = " ";
+
+    for(auto it = m.cbegin(); it != m.cend(); ++it ) {
+        if (it ->second > currentMax) {
+            arg_max = it -> first;
+            currentMax = it -> second;
+        }
+    }
+    cout << "Value " << arg_max << " occurs " << currentMax << " times " << endl;
 }
 
 int main() {
     //vector<string> AOL = tokenizeAOL();
     vector<string> CAIDA = tokenizeCAIDA();
     //HashMap(AOL);
+    //HashMap(CAIDA);
 
     return 0;
 }
