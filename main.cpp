@@ -41,9 +41,11 @@ vector<string> tokenizeAOL() {
 vector<string> tokenizeCAIDA() {
     // Store the contents into a vector of strings
     vector<string> outputs;
+    vector<uint32_t> test;
 
     // Create the file object (input)
     ifstream myfile(R"(dataset/CaidaDataset.txt)");
+    ofstream CaidaProcessed(R"(dataset/CAIDAProcessed.txt)");
 
     // Temporary buffer
     string temp;
@@ -58,17 +60,34 @@ vector<string> tokenizeCAIDA() {
         // regex_search that searches pattern regexp in the string mystr
         if(regex_search(temp, match, rgx)){
             for (auto elem : match) {
-                outputs.push_back(elem);
+                uint32_t IntegerAddress = 0;
+                string token;
+                string tempStr = elem.str();
+                std::istringstream iss(tempStr);
+                for (int i=0; i<4; ++i) {
+                    uint32_t part;
+                    iss >> part;
+                    IntegerAddress |= part << (8*(3-i));
+                    if ( i != 3 ) {
+                        char delimiter;
+                        iss >> delimiter;
+                        if (iss.fail() || delimiter != '.') {
+                            throw std::runtime_error("Invalid IP address - Expected '.' delimiter");
+                        }
+                    } else {
+                        CaidaProcessed << IntegerAddress << endl;
+                    }
+                }
             }
         }
 
     }
-
     // Printing the elements of the vector (Commeted out most of the time)
     //for (const auto& x : outputs) {
         //cout << x << "\n";
     //}
-
+    CaidaProcessed.close();
+    cout << "done :)";
     return outputs;
 }
 
