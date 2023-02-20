@@ -13,7 +13,7 @@ vector<string> tokenizeAOL() {
     vector<string> outputs;
 
     // Create the file object (input)
-    ifstream myfile(R"(C:\Users\ruben\Desktop\Uni\6. Sjette semester\BachelorProjekt\Coding\dataset2.txt)");
+    ifstream myfile(R"(dataset/AOLDataset.txt)");
 
     // Temporary buffer
     string temp;
@@ -44,7 +44,7 @@ vector<string> tokenizeCAIDA() {
     vector<string> outputs;
 
     // Create the file object (input)
-    ifstream myfile(R"(C:\Users\ruben\Desktop\Uni\6. Sjette semester\BachelorProjekt\Coding\dataset3.txt)");
+    ifstream myfile(R"(dataset/CaidaDataset.txt)");
 
     // Temporary buffer
     string temp;
@@ -68,6 +68,10 @@ vector<string> tokenizeCAIDA() {
     // Removing duplicates, since I can't seem to figure out, when it gets duplicated
     sort( outputs.begin(), outputs.end() );
     outputs.erase( unique( outputs.begin(), outputs.end() ), outputs.end() );
+
+    for (auto x : outputs) {
+        cout << x << "\n";
+    }
 
     return outputs;
 }
@@ -93,9 +97,9 @@ void HashMap(const vector<string>& values) {
 }
 
 int main() {
-    vector<string> AOL = tokenizeAOL();
+    //vector<string> AOL = tokenizeAOL();
     vector<string> CAIDA = tokenizeCAIDA();
-    HashMap(AOL);
+    //HashMap(AOL);
 
     return 0;
 }
