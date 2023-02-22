@@ -123,7 +123,7 @@ void HashMap(const vector<string>& values) {
 }
 
 void misraGries(int k, vector<int>& incomming, int n) {
-    // Initialize the new map
+    // Initialize the new map.
     unordered_map<int, int> freqMap;
 
     // Iterate the incomming stream
