@@ -122,9 +122,39 @@ void HashMap(const vector<string>& values) {
     cout << "Value " << arg_max << " occurs " << currentMax << " times " << endl;
 }
 
+void misraGries(int k, vector<int>& incomming, int n) {
+    // Initialize the new map
+    unordered_map<int, int> freqMap;
+
+    // Iterate the incomming stream
+    for (int i : incomming) {
+        // If the element already exists in the map, add one to its frequency
+        if(freqMap.find(i) != freqMap.end()) {
+            freqMap[i]++;
+        }
+        // Else if the size of D is less than k-1, insert a in D with value 1
+        else if (freqMap.size() < k - 1) {
+            freqMap[i] = 1;
+        }
+        // Else decrement all counters in D by 1, and remove all elements with count 0
+        else {
+            for (auto& it : freqMap) {
+                it.second--;
+                if (it.second == 0) {
+                    freqMap.erase(it.first);
+                }
+            }
+        }
+    }
+}
+
 int main() {
     //vector<string> AOL = tokenizeAOL();
-    vector<string> CAIDA = tokenizeCAIDA();
+
+    // We do not need to use this method call anymore, since we have generated our new data.
+    //vector<string> CAIDA = tokenizeCAIDA();
+
+
     //HashMap(AOL);
     //HashMap(CAIDA);
 
