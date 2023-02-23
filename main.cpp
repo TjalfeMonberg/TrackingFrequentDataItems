@@ -5,6 +5,7 @@
 #include <regex>
 #include <set>
 #include <cstdlib>
+#include <random>
 
 using namespace std;
 
@@ -188,7 +189,9 @@ int power(int x, unsigned int y, int p)
 bool millerTest(int d, int prime) {
     // Pick a random number in [2..n-2]
     // Corner cases make sure that n > 4
-    int a = 2 + rand() % (prime - 4);
+    default_random_engine generator;
+    uniform_int_distribution<int> distribution(2,prime-4);
+    int a = distribution(generator);
 
     // Compute a^d % n
     int x = power(a, d, prime);
@@ -215,8 +218,11 @@ bool millerTest(int d, int prime) {
 }
 
 int generateRandomPrine(int lowerBound, int upperBound) {
+    default_random_engine generator;
+    uniform_int_distribution<int> distribution(lowerBound,upperBound);
+
     // We start by generating the random number, between the bounds
-    int temp = (rand() % (upperBound - lowerBound + 1)) + lowerBound;
+    int temp = distribution(generator);
 
     if (isPrime(temp)) {
 
@@ -241,10 +247,14 @@ int customHashFunction(int lowerBound, int upperBound, vector<int> dataStream) {
     // Getting a random prime number
     int prime = generateRandomPrine(lowerBound, upperBound);
 
+    default_random_engine generator;
+    uniform_int_distribution<int> distribution(0,prime);
+    uniform_int_distribution<int> distribution2(0,prime^2);
+
     // Selecting random a and b
-    int a = (rand() % ((prime * prime) - prime + 1)) + prime;
-    int b = (rand() % ((prime * prime) - prime + 1)) + prime;
-    int m = (rand() % ((prime) - prime + 1)) + prime;
+    int a = distribution2(generator);
+    int b = distribution2(generator);
+    int m = distribution(generator);
 
     vector<int> hashedVector;
 
@@ -258,7 +268,6 @@ int main() {
 
     // We do not need to use this method call anymore, since we have generated our new data.
     //vector<string> CAIDA = tokenizeCAIDA();
-
 
     //HashMap(AOL);
     //HashMap(CAIDA);
