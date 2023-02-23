@@ -4,7 +4,6 @@
 #include <vector>
 #include <regex>
 #include <set>
-#include <cstdlib>
 #include <random>
 
 using namespace std;
@@ -166,6 +165,7 @@ bool isPrime(int n) {
     return true;
 }
 
+/*
 // Utility function to do modular exponentiation.
 // It returns (x^y) % p
 int power(int x, unsigned int y, int p)
@@ -242,10 +242,29 @@ int generateRandomPrine(int lowerBound, int upperBound) {
     }
     return 0;
 }
+*/
 
+vector<int> generateRandomPrime(int lowerBound, int upperBound ) {
+    default_random_engine generator;
+    uniform_int_distribution<int> distribution(lowerBound,upperBound);
+
+    int primeCandidate = distribution(generator);
+    vector<int> candidates;
+
+    for (int i = 0; i < upperBound; ++i) {
+        if (isPrime(primeCandidate)) {
+            candidates.push_back(primeCandidate);
+        }
+        primeCandidate++;
+    }
+
+    return candidates;
+}
+
+/*
 int customHashFunction(int lowerBound, int upperBound, vector<int> dataStream) {
     // Getting a random prime number
-    int prime = generateRandomPrine(lowerBound, upperBound);
+    int prime = generateRandomPrime(lowerBound, upperBound);
 
     default_random_engine generator;
     uniform_int_distribution<int> distribution(0,prime);
@@ -262,6 +281,7 @@ int customHashFunction(int lowerBound, int upperBound, vector<int> dataStream) {
         int hashFunction = ((a * elem + b) % prime) % m;
     }
 }
+*/
 
 int main() {
     //vector<string> AOL = tokenizeAOL();
@@ -271,6 +291,13 @@ int main() {
 
     //HashMap(AOL);
     //HashMap(CAIDA);
+
+    vector<int> primes = generateRandomPrime(100,100000);
+    for (auto elem : primes) {
+        cout << elem << "\n";
+    }
+    cout << "\n";
+    cout << primes.size() << "\n";
 
     return 0;
 }
