@@ -5,6 +5,8 @@
 #include <regex>
 #include <set>
 #include <random>
+#include <cstdlib>
+#include <chrono>
 
 using namespace std;
 
@@ -165,6 +167,38 @@ bool isPrime(int n) {
     return true;
 }
 
+bool isPrimeOptimized(int n) {
+    // Corner cases
+    if (n <= 1)
+        return false;
+    if (n <= 3)
+        return true;
+
+    // This is checked so that we can skip
+    // middle five numbers in below loop
+    if (n % 2 == 0 || n % 3 == 0)
+        return false;
+
+    // Using concept of prime number can be represented in form of
+    // (6*n + 1) or(6*n - 1) hence we have to go for every multiple of 6 and
+    // prime number would always be 1 less or 1 more than the multiple of 6.
+
+    /*
+       1. Here i is of the form 5 + 6K where K>=0
+       2. i+1, i+3, i+5 are even numbers (6 + 6K). N is not an even number
+       3. Because N%2 and N%3 checks are done in the before step
+       4. Hence i+1, i+3, i+5 can't be N's divisors.
+       5. i+4 is 9 + 6K which is a 3 multiple.
+       6. N is not a 3 multiple hence i+4 can't be it's divisor
+       Hence we only check if N is a divisor of i or i+2.
+    */
+    for (int i = 5; i * i <= n; i = i + 6)
+        if (n % i == 0 || n % (i + 2) == 0)
+            return false;
+
+    return true;
+}
+
 /*
 // Utility function to do modular exponentiation.
 // It returns (x^y) % p
@@ -244,21 +278,32 @@ int generateRandomPrine(int lowerBound, int upperBound) {
 }
 */
 
-vector<int> generateRandomPrime(int lowerBound, int upperBound ) {
-    default_random_engine generator;
+int generateRandomPrime(int lowerBound, int upperBound) {
+    // Ensuring that we get different values each function calls
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+
+    // Setting up the generator
+    default_random_engine generator (seed);
     uniform_int_distribution<int> distribution(lowerBound,upperBound);
 
-    int primeCandidate = distribution(generator);
+    // Setting up a vector for prime candidates, and selecting a random candidate
     vector<int> candidates;
+    int primeCandidate = distribution(generator);
 
-    for (int i = 0; i < upperBound; ++i) {
-        if (isPrime(primeCandidate)) {
+    // Getting the first 1000 primes, from our random selected prime
+    for (int i = 0; i < 1000; ++i) {
+        if (isPrimeOptimized(primeCandidate)) {
             candidates.push_back(primeCandidate);
         }
         primeCandidate++;
     }
 
-    return candidates;
+    // Selecting a random prime, from the vector of differents primes
+    // To ensure that we have a truely random prime.
+    uniform_int_distribution<int> distribution1(0, candidates.size());
+    int finalPrime = candidates[distribution1(generator)];
+
+    return finalPrime;
 }
 
 /*
@@ -292,12 +337,11 @@ int main() {
     //HashMap(AOL);
     //HashMap(CAIDA);
 
-    vector<int> primes = generateRandomPrime(100,100000);
-    for (auto elem : primes) {
-        cout << elem << "\n";
+    // For testing purpose
+    for (int i = 0; i < 100; ++i) {
+        int prime = generateRandomPrime(100,100000);
+        cout << prime << "\n";
     }
-    cout << "\n";
-    cout << primes.size() << "\n";
 
     return 0;
 }
