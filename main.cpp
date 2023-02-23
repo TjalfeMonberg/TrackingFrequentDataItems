@@ -151,6 +151,8 @@ void misraGries(int k, vector<int>& incomming, int n) {
     }
 }
 
+// Old version of the "isPrime" function, since we found out,
+// That it can be optimized to run at O(sqrt(n)) instead of O(n)
 bool isPrime(int n) {
     // Since 0 and 1 is not
     // prime return false.
@@ -167,6 +169,7 @@ bool isPrime(int n) {
     return true;
 }
 
+// New version, that has a run time of O(sqrt(n))
 bool isPrimeOptimized(int n) {
     // Corner cases
     if (n <= 1)
@@ -352,7 +355,7 @@ int main() {
     vector<int> something{1, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     
     // For testing purpose
-    int prime = generateRandomPrime(0, 10000);
+    int prime = generateRandomPrime(0, 1000000);
     int something1 = customHashFunction(prime, something);
 
     return 0;
