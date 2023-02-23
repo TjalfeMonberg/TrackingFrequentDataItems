@@ -306,12 +306,13 @@ int generateRandomPrime(int lowerBound, int upperBound) {
     return finalPrime;
 }
 
-/*
-int customHashFunction(int lowerBound, int upperBound, vector<int> dataStream) {
-    // Getting a random prime number
-    int prime = generateRandomPrime(lowerBound, upperBound);
 
-    default_random_engine generator;
+int customHashFunction(int prime, vector<int> dataStream) {
+    // Ensuring that we get different values each function calls
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+
+    // Generating different distributions
+    default_random_engine generator(seed);
     uniform_int_distribution<int> distribution(0,prime);
     uniform_int_distribution<int> distribution2(0,prime^2);
 
@@ -320,13 +321,24 @@ int customHashFunction(int lowerBound, int upperBound, vector<int> dataStream) {
     int b = distribution2(generator);
     int m = distribution(generator);
 
+    cout << "prime: " << prime << "\n";
+    cout << "a: " << a << "\n";
+    cout << "b: " << b << "\n";
+    cout << "m: " << m << "\n";
+
     vector<int> hashedVector;
 
     for (auto elem : dataStream) {
         int hashFunction = ((a * elem + b) % prime) % m;
+        hashedVector.push_back(hashFunction);
     }
+
+    for (auto x : hashedVector) {
+        cout << x << "\n";
+    }
+
+    return 0;
 }
-*/
 
 int main() {
     //vector<string> AOL = tokenizeAOL();
@@ -337,11 +349,11 @@ int main() {
     //HashMap(AOL);
     //HashMap(CAIDA);
 
+    vector<int> something{1, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    
     // For testing purpose
-    for (int i = 0; i < 100; ++i) {
-        int prime = generateRandomPrime(100,100000);
-        cout << prime << "\n";
-    }
+    int prime = generateRandomPrime(0, 10000);
+    int something1 = customHashFunction(prime, something);
 
     return 0;
 }
