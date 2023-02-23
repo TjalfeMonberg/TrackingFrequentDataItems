@@ -4,6 +4,7 @@
 #include <vector>
 #include <regex>
 #include <set>
+#include <cstdlib>
 
 using namespace std;
 
@@ -145,6 +146,110 @@ void misraGries(int k, vector<int>& incomming, int n) {
                 }
             }
         }
+    }
+}
+
+bool isPrime(int n) {
+    // Since 0 and 1 is not
+    // prime return false.
+    if(n == 1 || n == 0) return false;
+
+    // Run a loop from 2 to n-1
+    for(int i = 2; i < n; i++)
+    {
+        // if the number is divisible by i,
+        // then n is not a prime number.
+        if(n  % i == 0) return false;
+    }
+    // Otherwise n is a prime number.
+    return true;
+}
+
+// Utility function to do modular exponentiation.
+// It returns (x^y) % p
+int power(int x, unsigned int y, int p)
+{
+    int res = 1;      // Initialize result
+    x = x % p;  // Update x if it is more than or
+    // equal to p
+    while (y > 0)
+    {
+        // If y is odd, multiply x with result
+        if (y & 1)
+            res = (res*x) % p;
+
+        // y must be even now
+        y = y>>1; // y = y/2
+        x = (x*x) % p;
+    }
+    return res;
+}
+
+bool millerTest(int d, int prime) {
+    // Pick a random number in [2..n-2]
+    // Corner cases make sure that n > 4
+    int a = 2 + rand() % (prime - 4);
+
+    // Compute a^d % n
+    int x = power(a, d, prime);
+
+    if (x == 1  || x == prime-1)
+        return true;
+
+    // Keep squaring x while one of the following doesn't
+    // happen
+    // (i)   d does not reach n-1
+    // (ii)  (x^2) % n is not 1
+    // (iii) (x^2) % n is not n-1
+    while (d != prime-1)
+    {
+        x = (x * x) % prime;
+        d *= 2;
+
+        if (x == 1)      return false;
+        if (x == prime-1)    return true;
+    }
+
+    // Return composite
+    return false;
+}
+
+int generateRandomPrine(int lowerBound, int upperBound) {
+    // We start by generating the random number, between the bounds
+    int temp = (rand() % (upperBound - lowerBound + 1)) + lowerBound;
+
+    if (isPrime(temp)) {
+
+        // Find r, such that n = 2^d * r + 1 for some r >= 1
+        int d = temp - 1;
+        while (d % 2 == 0) {
+            d /= 2;
+        }
+
+
+        for (int i = 0; i < 100; ++i) {
+            if (!millerTest(d, temp)) {
+                return false;
+            }
+        }
+        return temp;
+    }
+    return 0;
+}
+
+int customHashFunction(int lowerBound, int upperBound, vector<int> dataStream) {
+    // Getting a random prime number
+    int prime = generateRandomPrine(lowerBound, upperBound);
+
+    // Selecting random a and b
+    int a = (rand() % ((prime * prime) - prime + 1)) + prime;
+    int b = (rand() % ((prime * prime) - prime + 1)) + prime;
+    int m = (rand() % ((prime) - prime + 1)) + prime;
+
+    vector<int> hashedVector;
+
+    for (auto elem : dataStream) {
+        int hashFunction = ((a * elem + b) % prime) % m;
     }
 }
 
