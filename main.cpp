@@ -310,24 +310,26 @@ int generateRandomPrime(int lowerBound, int upperBound) {
 }
 
 
-int customHashFunction(int prime, vector<int> dataStream) {
+vector<int> customHashFunction(int prime, vector<int> dataStream, int arrayLength) {
     // Ensuring that we get different values each function calls
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
     // Generating different distributions
     default_random_engine generator(seed);
     uniform_int_distribution<int> distribution(0,prime);
-    uniform_int_distribution<int> distribution2(0,prime^2);
 
     // Selecting random a and b
-    int a = distribution2(generator);
-    int b = distribution2(generator);
-    int m = distribution(generator);
+    int a = distribution(generator);
+    int b = distribution(generator);
+    int m = arrayLength;
 
-    cout << "prime: " << prime << "\n";
-    cout << "a: " << a << "\n";
-    cout << "b: " << b << "\n";
-    cout << "m: " << m << "\n";
+    // Remove the m number, since we are using arraylength
+    //int m = distribution(generator);
+
+    //cout << "prime: " << prime << "\n";
+    //cout << "a: " << a << "\n";
+    //cout << "b: " << b << "\n";
+    //cout << "m: " << m << "\n";
 
     vector<int> hashedVector;
 
@@ -336,11 +338,36 @@ int customHashFunction(int prime, vector<int> dataStream) {
         hashedVector.push_back(hashFunction);
     }
 
-    for (auto x : hashedVector) {
-        cout << x << "\n";
+    //for (auto x : hashedVector) {
+        //cout << x << "\n";
+    //}
+
+    return hashedVector;
+}
+
+void testIfHashedValuesAreTheSame() {
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+
+    default_random_engine generator(seed);
+    uniform_int_distribution<int> dist(0,10000);
+
+    vector<int> something;
+    for (int i = 0; i < 1000000000; ++i) {
+        int a = dist(generator);
+        something.push_back(a);
     }
 
-    return 0;
+
+    // For testing purpose
+    int prime = generateRandomPrime(0, 1000000);
+    vector<int> something1 = customHashFunction(prime, something, 1);
+
+
+    sort(something1.begin(), something1.end());
+    auto it = std::unique(something1.begin(), something1.end());
+    bool wasUnique = (it == something1.end());
+
+    cout << wasUnique << endl;
 }
 
 int main() {
@@ -352,11 +379,7 @@ int main() {
     //HashMap(AOL);
     //HashMap(CAIDA);
 
-    vector<int> something{1, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    
-    // For testing purpose
-    int prime = generateRandomPrime(0, 1000000);
-    int something1 = customHashFunction(prime, something);
+
 
     return 0;
 }
