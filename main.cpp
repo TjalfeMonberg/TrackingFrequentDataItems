@@ -345,6 +345,15 @@ vector<int> customHashFunction(int prime, const vector<int>& dataStream, int arr
     return hashedVector;
 }
 
+// This is a function that has the 200 first prime numbers, that are larger than
+// The value of the hashed values that we have
+void testFunc(vector<int> dataStream) {
+    // We need the star, since we want the value, and not an iterator
+    auto max = *max_element(begin(dataStream), end(dataStream));
+
+    cout << "Max value: " << max << endl;
+}
+
 void testIfHashedValuesAreTheSame() {
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
@@ -379,7 +388,17 @@ int main() {
     //HashMap(AOL);
     //HashMap(CAIDA);
 
-
+    vector<int> dataStream = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+    cout << "DataStrema length: " << dataStream.size() << "\n";
+    cout << "DataStrema length * 2: " << dataStream.size() * 2 << "\n";
+    int prime = generateRandomPrime(dataStream.size(), (dataStream.size() * 2));
+    cout << "Prime: " << prime << "\n";
+    vector<int> hash = customHashFunction(prime, dataStream, dataStream.size());
+    cout << "Hash values: " << "\n";
+    for (auto x : hash) {
+        cout << x << "\n";
+    }
+    testFunc(hash);
 
     return 0;
 }
