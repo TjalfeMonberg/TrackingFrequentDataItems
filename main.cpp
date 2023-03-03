@@ -310,7 +310,7 @@ int generateRandomPrime(int lowerBound, int upperBound) {
 }
 
 
-vector<int> customHashFunction(int prime, vector<int> dataStream, int arrayLength) {
+vector<int> customHashFunction(int prime, const vector<int>& dataStream, int arrayLength) {
     // Ensuring that we get different values each function calls
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
