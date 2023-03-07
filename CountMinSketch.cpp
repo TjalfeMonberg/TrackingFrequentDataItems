@@ -75,7 +75,7 @@ public:
     }
 
     int findMinElem(uint64_t elem) {
-        // Initialize temp value to biggest possible value for the given data type
+        // Initialize temp value to biggest possible value for the given data type. TODO: Change this to uint64_t datatype to be consistent, find different function for min or use if statement
         int tempMin = numeric_limits<uint64_t>::max();
         // Once again, could this be vectorized instead of for loop? TODO: Check for vectorization of this query
         for (int i=0; i < t; i++) {
