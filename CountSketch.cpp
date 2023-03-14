@@ -1,5 +1,5 @@
 //
-// Created by Tjalfe on 07-03-2023.
+// Created by Tjalfe on 14-03-2023.
 //
 #include <iostream>
 #include <fstream>
@@ -14,21 +14,25 @@
 
 using namespace std;
 
-class CountMinSketch {
+class CountSketch {
 private:
     int t, k; // t for amount of arrays, k for amount of counters per array
     int **counters; // Counters for the sketch itself
     vector<tuple<uint64_t, uint64_t>> a_b_hashvector; // Vector of random a and b values to be saved per array in our counters
 
-    [[nodiscard]] uint64_t customHashFunction(uint64_t a, uint64_t b, int elem) const {
+    [[nodiscard]] int customHashFunction(uint64_t a, uint64_t b, int elem) const {
         // Prime has to be bigger than the biggest number in our possible elem interval, so here 700001 fits the job
         return ((a * elem + b) % 26000003) % k;
+    }
+
+    [[nodiscard]] int oneOrMinusOneHash(uint64_t a, uint64_t b, int elem) const {
+        return 2*((a*elem+b) >> (64-1))-1;
     }
 
 
 public:
     // Constructor for initializing our counter matrix, as well as initializing our prime value and our random values of a and b for every hash function
-    CountMinSketch(int _t, int _k) : t(_t), k(_k) {
+    CountSketch(int _t, int _k) : t(_t), k(_k) {
         // Ensuring that we get a random start seed to pick our a and b values
         unsigned seed = chrono::system_clock::now().time_since_epoch().count();
         // Generating different distributions
@@ -43,7 +47,7 @@ public:
         for (int i=0; i < t; i++) {
             counters[i] = new int[k];
             memset(counters[i], 0, sizeof(int) * k);
-            // Selecting random a and b, that are actually random (tested)
+            // Selecting random a and b
             uint64_t a = distribution(generator);
             uint64_t b = distribution(generator);
             a_b_hashvector.push_back(make_tuple(a,b));
@@ -52,13 +56,16 @@ public:
     }
 
     // Destructor to free memory
-    ~CountMinSketch() {
+    ~CountSketch() {
         for (int i=0; i < t; i++) {
             delete[] counters[i];
         }
         delete[] counters;
-        // Since c++ is coded in such a way that the vector gets deleted when it's out of scope, We do not need to delete it manually
+
     }
+
+
+
 
     // As per the paper on CountSketch, elems will come in the form of (elem, c) where elem is elem to be counted, and c being by how much, given our processed data,
     // we will start the implementation by simply always passing 1 as the number for c
@@ -70,25 +77,27 @@ public:
             // Get the hash h_i by getting the randomly assigned a and b values
             uint64_t hash = customHashFunction(get<0>(a_b_tuple), get<1>(a_b_tuple), elem);
             // The hash simply returns what position in the array we want to count, so can use as follows
-            counters[i][hash] += c;
+            counters[i][hash] += oneOrMinusOneHash(get<0>(a_b_tuple), get<1>(a_b_tuple), elem) * c;
         }
     }
 
-    int findMinElem(uint32_t elem) {
-        // Initialize temp value to biggest possible value for the given data type.
-        int tempMin = numeric_limits<int>::max();
-        // Once again, could this be vectorized instead of for loop?
-        // TODO: Check for vectorization of this query <- Maybe not possible
-        /*
-         * In this version, we use the #pragma omp parallel for directive to instruct the compiler to parallelize the loop. The reduction(min:tempMin) clause tells OpenMP to keep track of the minimum value of tempMin across all threads, and combine the results at the end of the loop. This allows us to avoid race conditions and ensure that the final result is correct.
-         * By using parallelism, this implementation can take advantage of multiple CPU cores to speed up the computation, potentially achieving significant performance gains compared to the original sequential implementation.
-         */
-        #pragma omp parallel for reduction(min:tempMin)
+    int findMedianElem(uint32_t elem) {
+        vector<int> tempMedian;
         for (int i=0; i < t; i++) {
             tuple<uint64_t, uint64_t> a_b_tuple = a_b_hashvector[i];
             int hash = customHashFunction(get<0>(a_b_tuple), get<1>(a_b_tuple), elem);
-            tempMin = min(tempMin, counters[i][hash]);
+            int tempValue = counters[i][hash] * oneOrMinusOneHash(get<0>(a_b_tuple), get<1>(a_b_tuple), elem);
+            tempMedian.push_back(tempValue);
         }
-        return tempMin;
+        sort(tempMedian.begin(), tempMedian.end());
+        int median = 0;
+        if (!(tempMedian.size() % 2)) {
+            median = (tempMedian[tempMedian.size()/2] + tempMedian[(tempMedian.size()/2)-1])/2;
+        }
+        else {
+            int middleOfArray = tempMedian.size()/2;
+            median = tempMedian[middleOfArray];
+        }
+        return median;
     }
 };
