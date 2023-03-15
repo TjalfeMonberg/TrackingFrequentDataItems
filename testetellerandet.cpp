@@ -9,7 +9,7 @@
 #include "iostream"
 #include <chrono>
 
-vector<int> vectorShit() {
+vector<int> vectorizationOfDataset() {
     // Loading the dataset for testing
     ifstream dataStream(R"(TrackingFrequentDataItems/dataset/CAIDAProcessed.txt)");
 
@@ -43,7 +43,7 @@ void testCMS(double e, double d) {
     // Creating the CountMinSketch model
     CountMinSketch CMS = *new CountMinSketch(t, k);
 
-    vector<int> processedValues = vectorShit();
+    vector<int> processedValues = vectorizationOfDataset();
 
     for (auto x : processedValues) {
         CMS.updateCounters(x, 1);
@@ -58,7 +58,7 @@ void testCMS(double e, double d) {
 // TODO: Spørg Kasper om det her
 // TODO: Hvordan vælger vi delta ordenligt?
 double l2() {
-    vector<int> something = vectorShit();
+    vector<int> something = vectorizationOfDataset();
 
     double accum = 0;
     for (double x : something) {
@@ -78,7 +78,7 @@ void testCS(double e, double d) {
 
     CountSketch CS = *new CountSketch(t, k);
 
-    vector<int> processedValues = vectorShit();
+    vector<int> processedValues = vectorizationOfDataset();
 
     for (auto x : processedValues) {
         CS.updateCounters(x, 1);
