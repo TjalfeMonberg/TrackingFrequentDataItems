@@ -57,9 +57,6 @@ void testCMS(double e, double d) {
     cout << "Res: " << res << endl;
 }
 
-// Er det sådan her det skal regnes ud?
-// TODO: Spørg Kasper om det her
-// TODO: Hvordan vælger vi delta ordenligt?
 double l2() {
     vector<int> something = vectorizationOfDataset();
 
