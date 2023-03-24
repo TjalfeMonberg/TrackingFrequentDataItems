@@ -41,7 +41,23 @@ vector<string> tokenizeAOL() {
     return outputs;
 }
 
+vector<string> tokenizeCAIDAProcessed() {
+    // Store the contents into a vector of strings
+    vector<string> outputs;
 
+    // Create the file object (input)
+    ifstream myfile(R"(dataset/CAIDAProcessed.txt)");
+
+    // Temporary buffer
+    string temp;
+
+    // Get the input from the input file until EOF
+    while (getline(myfile, temp)) {
+        outputs.push_back(temp);
+    }
+
+    return outputs;
+}
 
 void checkIfThereAreDuplicatesInVector() {
     // Store the contents into a vector of strings
@@ -49,7 +65,6 @@ void checkIfThereAreDuplicatesInVector() {
 
     // Create the file object (input)
     ifstream myfile(R"(dataset/CaidaDataset.txt)");
-    ofstream CaidaProcessed(R"(dataset/CAIDAProcessed.txt)");
 
     // Temporary buffer
     string temp;
@@ -435,8 +450,8 @@ void notUsed() {
 
 int main() {
     vector<string> dataStream = tokenizeCAIDAProcessed();
-    checkCaida();
-    //hashMap(dataStream);
+    checkIfThereAreDuplicatesInVector();
+    hashMap(dataStream);
 
     return 0;
 }
