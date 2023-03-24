@@ -34,9 +34,12 @@ vector<int> vectorShit() {
 }
 
 void testCMS(double e, double d) {
-    int k = ceil(2 / e);
-    int t = ceil(log2(1/d));
+    // Deprecated, use direct values instead and calculate backwards in report with math
+    // int k = ceil(2 / e);
+    // int t = ceil(log2(1/d));
 
+    int k = e;
+    int t = d;
     cout << "T: " << t << "\n";
     cout << "K: " << k << "\n";
 
