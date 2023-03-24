@@ -41,6 +41,39 @@ vector<string> tokenizeAOL() {
     return outputs;
 }
 
+
+
+void checkIfThereAreDuplicatesInVector() {
+    // Store the contents into a vector of strings
+    vector<string> outputs;
+
+    // Create the file object (input)
+    ifstream myfile(R"(dataset/CaidaDataset.txt)");
+    ofstream CaidaProcessed(R"(dataset/CAIDAProcessed.txt)");
+
+    // Temporary buffer
+    string temp;
+
+    // Get the input from the input file until EOF
+    while (getline(myfile, temp)) {
+        // regex expression for pattern to be searched
+        regex rgx(R"(\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b)");
+
+        smatch match;
+
+        // regex_search that searches pattern regexp in the string mystr
+        if(regex_search(temp, match, rgx)){
+            for (auto elem : match) {
+                outputs.push_back(elem.str());
+            }}}
+
+    if(equal(outputs.begin(), outputs.begin() + 1, outputs.end())) {
+        cout << "Two items are equal";
+    } else {
+        cout << "There are no duplicates";
+    }
+}
+
 vector<string> tokenizeCAIDA() {
     // Store the contents into a vector of strings
     vector<string> outputs;
@@ -94,7 +127,7 @@ vector<string> tokenizeCAIDA() {
     return outputs;
 }
 
-void HashMap(const vector<string>& values) {
+void hashMap(const vector<string>& values) {
 
     unordered_map<string, int> m;
 
@@ -109,9 +142,9 @@ void HashMap(const vector<string>& values) {
     }
 
     // For printing the content of the hashmap
-    for (auto const &pair: m) {
-        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
-    }
+    //for (auto const &pair: m) {
+        //std::cout << "{" << pair.first << ": " << pair.second << "}\n";
+    //}
 
     unsigned currentMax = 0;
     string arg_max = " ";
@@ -379,7 +412,7 @@ void testIfHashedValuesAreTheSame() {
     cout << wasUnique << endl;
 }
 
-int main() {
+void notUsed() {
     //vector<string> AOL = tokenizeAOL();
 
     // We do not need to use this method call anymore, since we have generated our new data.
@@ -398,6 +431,12 @@ int main() {
         cout << x << "\n";
     }
     testFunc(hash);
+}
+
+int main() {
+    vector<string> dataStream = tokenizeCAIDAProcessed();
+    checkCaida();
+    //hashMap(dataStream);
 
     return 0;
 }
