@@ -57,6 +57,21 @@ void testCMS(double e, double d) {
     cout << "Res: " << res << endl;
 }
 
+void makePlotFileCMS(int epoch) {
+    vector<int> processedValues = vectorizationOfDataset();
+    ofstream plotFileCMS(R"(TrackingFrequentDataItems/plotfiles/plotFileCMS.txt)");
+    for (int i=0; i<epoch; i++) {
+        // For this plot testing we are using t value 40 and k value 200
+        CountMinSketch CMS = *new CountMinSketch(40, 200);
+        for (auto x : processedValues) {
+            CMS.updateCounters(x, 1);
+        }
+        for (auto x : processedValues) {
+            plotFileCMS << CMS.findMinElem(x) << endl;
+        }
+    }
+}
+
 double l2() {
     vector<int> something = vectorizationOfDataset();
 
@@ -70,8 +85,12 @@ double l2() {
 }
 
 void testCS(double e, double d) {
-    int k = ceil(2 / e);
-    int t = ceil(log2(1/d));
+    // Deprecated, use direct values instead and calculate backwards in report with math
+    // int k = ceil(2 / e);
+    // int t = ceil(log2(1/d));
+
+    int k = e;
+    int t = d;
 
     cout << "T: " << t << "\n";
     cout << "K: " << k << "\n";
@@ -90,7 +109,7 @@ void testCS(double e, double d) {
 
 }
 
-int main(){
+void notUsed() {
     double d = l2();
     cout << "d: " << d << endl;
     auto start = chrono::high_resolution_clock::now();
@@ -104,5 +123,9 @@ int main(){
     auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
     cout << "Duration: " << duration.count() << " milliseconds" << endl;
+}
+
+int main(){
+    makePlotFileCMS(10);
     return 0;
 }
