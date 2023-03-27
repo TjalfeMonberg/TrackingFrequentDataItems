@@ -72,6 +72,21 @@ void makePlotFileCMS(int epoch) {
     }
 }
 
+void makePlotFileCS(int epoch) {
+    vector<int> processedValues = vectorizationOfDataset();
+    ofstream plotFileCMS(R"(TrackingFrequentDataItems/plotfiles/plotFileCS.txt)");
+    for (int i=0; i<epoch; i++) {
+        // For this plot testing we are using t value 40 and k value 200
+        CountSketch CS = *new CountSketch(40, 200);
+        for (auto x : processedValues) {
+            CS.updateCounters(x, 1);
+        }
+        for (auto x : processedValues) {
+            plotFileCMS << CS.findMedianElem(x) << endl;
+        }
+    }
+}
+
 double l2() {
     vector<int> something = vectorizationOfDataset();
 
@@ -126,6 +141,6 @@ void notUsed() {
 }
 
 int main(){
-    makePlotFileCMS(10);
+    makePlotFileCS(10);
     return 0;
 }

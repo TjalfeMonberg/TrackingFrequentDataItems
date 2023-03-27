@@ -19,13 +19,14 @@ private:
     int t, k; // t for amount of arrays, k for amount of counters per array
     int **counters; // Counters for the sketch itself
     vector<tuple<uint64_t, uint64_t>> a_b_hashvector; // Vector of random a and b values to be saved per array in our counters
+    vector<tuple<uint64_t, uint64_t>> a_b_hashvector_for_g;
 
-    [[nodiscard]] int customHashFunction(uint64_t a, uint64_t b, int elem) const {
+    [[nodiscard]] int customHashFunction(uint64_t a, uint64_t b, uint32_t elem) const {
         // Prime has to be bigger than the biggest number in our possible elem interval, so here 700001 fits the job
         return ((a * elem + b) % 26000003) % k;
     }
 
-    [[nodiscard]] int oneOrMinusOneHash(uint64_t a, uint64_t b, int elem) const {
+    [[nodiscard]] int oneOrMinusOneHash(uint64_t a, uint64_t b, uint32_t elem) const {
         return 2*((a*elem+b) >> (64-1))-1;
     }
 
@@ -53,6 +54,13 @@ public:
             a_b_hashvector.push_back(make_tuple(a,b));
         }
 
+        unsigned gseed = chrono::system_clock::now().time_since_epoch().count();
+        default_random_engine g_generator(gseed);
+        for (int i=0; i < t; i++) {
+            uint64_t g_a = distribution(g_generator);
+            uint64_t g_b = distribution(g_generator);
+            a_b_hashvector_for_g.push_back(make_tuple(g_a, g_b));
+        }
     }
 
     // Destructor to free memory
@@ -74,10 +82,11 @@ public:
         for (int i=0; i < t; i++) {
             // Grab tuple of a and b from vector
             tuple<uint64_t, uint64_t> a_b_tuple = a_b_hashvector[i];
+            tuple<uint64_t, uint64_t> a_b_tuple_for_g = a_b_hashvector_for_g[i];
             // Get the hash h_i by getting the randomly assigned a and b values
             uint64_t hash = customHashFunction(get<0>(a_b_tuple), get<1>(a_b_tuple), elem);
             // The hash simply returns what position in the array we want to count, so can use as follows
-            counters[i][hash] += oneOrMinusOneHash(get<0>(a_b_tuple), get<1>(a_b_tuple), elem) * c;
+            counters[i][hash] += oneOrMinusOneHash(get<0>(a_b_tuple_for_g), get<1>(a_b_tuple_for_g), elem) * c;
         }
     }
 
@@ -85,8 +94,9 @@ public:
         vector<int> tempMedian;
         for (int i=0; i < t; i++) {
             tuple<uint64_t, uint64_t> a_b_tuple = a_b_hashvector[i];
+            tuple<uint64_t, uint64_t> a_b_tuple_for_g = a_b_hashvector_for_g[i];
             int hash = customHashFunction(get<0>(a_b_tuple), get<1>(a_b_tuple), elem);
-            int tempValue = counters[i][hash] * oneOrMinusOneHash(get<0>(a_b_tuple), get<1>(a_b_tuple), elem);
+            int tempValue = counters[i][hash] * oneOrMinusOneHash(get<0>(a_b_tuple_for_g), get<1>(a_b_tuple_for_g), elem);
             tempMedian.push_back(tempValue);
         }
         sort(tempMedian.begin(), tempMedian.end());
