@@ -33,8 +33,8 @@ private:
     }
 
     [[nodiscard]] int oneOrMinusOneHash(uint64_t a, uint64_t b, uint32_t elem) const {
-        uint64_t rubenLugter = (a*elem+b);
-        int some = 2*(rubenLugter >> (64-1))-1;
+        uint64_t bitLength = (a*elem+b);
+        int some = 2*(bitLength >> (64-1))-1;
         return some;
     }
 
