@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import collections
 
-file = open("plotfiles\plotFileCMS.txt", "r")
+file = open("plotfiles\plotFileCS.txt", "r")
 
 resArray = []
 

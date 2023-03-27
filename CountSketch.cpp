@@ -26,8 +26,16 @@ private:
         return ((a * elem + b) % 26000003) % k;
     }
 
+    [[nodiscard]] unsigned countBits(uint64_t number) const {
+        // log function in base 2
+        // take only integer part
+        return (int)log2(number)+1;
+    }
+
     [[nodiscard]] int oneOrMinusOneHash(uint64_t a, uint64_t b, uint32_t elem) const {
-        return 2*((a*elem+b) >> (64-1))-1;
+        uint64_t rubenLugter = (a*elem+b);
+        int some = 2*(rubenLugter >> (64-1))-1;
+        return some;
     }
 
 
@@ -42,6 +50,7 @@ public:
         // Initialize prime to 700001 as the prime only needs to be bigger than the integers we have of different values our data can take,
         // this is to ensure that it will give us a proper value when we do "mod k" in our hash function
         uniform_int_distribution<uint64_t> distribution(0,26000003-1);
+        uniform_int_distribution<uint64_t> bitGenerator(9223372036854775808, 18446744073709551615);
 
 
         counters = new int*[t];
@@ -57,8 +66,8 @@ public:
         unsigned gseed = chrono::system_clock::now().time_since_epoch().count();
         default_random_engine g_generator(gseed);
         for (int i=0; i < t; i++) {
-            uint64_t g_a = distribution(g_generator);
-            uint64_t g_b = distribution(g_generator);
+            uint64_t g_a = bitGenerator(g_generator);
+            uint64_t g_b = bitGenerator(g_generator);
             a_b_hashvector_for_g.push_back(make_tuple(g_a, g_b));
         }
     }

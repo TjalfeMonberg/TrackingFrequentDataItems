@@ -448,6 +448,23 @@ void notUsed() {
     testFunc(hash);
 }
 
+void createNewDataset(int amountOfLines) {
+    // Creating a new document for the data
+    ofstream newDataSet(R"(dataset/CustomDataset.txt)");
+
+    // Ensuring that we get different values each function calls
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+
+    // Setting up the generator
+    default_random_engine generator (seed);
+    uniform_int_distribution<int> distribution(100,1000000);
+
+    for (int i = 0; i <= amountOfLines; ++i) {
+        int candidate = distribution(generator);
+        newDataSet << candidate << endl;
+    }
+}
+
 int main() {
     vector<string> dataStream = tokenizeCAIDAProcessed();
     checkIfThereAreDuplicatesInVector();
