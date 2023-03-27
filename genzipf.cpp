@@ -43,11 +43,19 @@
 //=-------------------------------------------------------------------------=
 //=  History: KJC (11/16/03) - Genesis (from genexp.c)                      =
 //===========================================================================
+// Rewritten version of the original genzipf.c file to c++
+// By Ruben Mortensen
+
 //----- Include files -------------------------------------------------------
-#include <assert.h>             // Needed for assert() macro
-#include <stdio.h>              // Needed for printf()
-#include <stdlib.h>             // Needed for exit() and ato*()
-#include <math.h>               // Needed for pow()
+#include <iostream>            // For getting terminal info
+#include <fstream>             // For writing the outputfile
+#include <cassert>             // Needed for assert() macro
+#include <cstdio>              // Needed for printf()
+#include <cstdlib>             // Needed for exit() and ato*()
+#include <cmath>               // Needed for pow()
+
+//----- Namespace -----------------------------------------------------------
+using namespace std;
 
 //----- Constants -----------------------------------------------------------
 #define  FALSE          0       // Boolean false
@@ -58,69 +66,64 @@ int      zipf(double alpha, int n);  // Returns a Zipf random variable
 double   rand_val(int seed);         // Jain's RNG
 
 //===== Main program ========================================================
-int main(void)
-{
-    FILE   *fp;                   // File pointer to output file
-    char   file_name[256];        // Output file name string
-    char   temp_string[256];      // Temporary string variable
-    double alpha;                 // Alpha parameter
-    double n;                     // N parameter
-    int    num_values;            // Number of values
-    int    zipf_rv;               // Zipf random variable
-    int    i;                     // Loop counter
+int main() {
+    ofstream fp;                   // File pointer to output file
+    char   file_name[256];          // Output file name string
+    char   temp_string[256];        // Temporary string variable
+    double alpha, n;                // Alpha parameter and N parameter
+    int    num_values, zipf_rv;  // Number of values, Zipf random variable
 
     // Output banner
-    printf("---------------------------------------- genzipf.c ----- \n");
+    printf("---------------------------------------- genzipf.cpp --- \n");
     printf("-     Program to generate Zipf random variables        - \n");
     printf("-------------------------------------------------------- \n");
 
     // Prompt for output filename and then create/open the file
-    printf("Output file name ===================================> ");
-    scanf("%s", file_name);
-    fp = fopen(file_name, "w");
-    if (fp == NULL)
-    {
-        printf("ERROR in creating output file (%s) \n", file_name);
+    cout << "Output file name ===================================> ";
+    cin >> file_name;
+    fp.open(file_name, ios::out);
+    if (!fp.is_open()) {
+        cout << "ERROR in creating output file (" << file_name << ") \n";
         exit(1);
     }
 
     // Prompt for random number seed and then use it
-    printf("Random number seed (greater than 0) ================> ");
-    scanf("%s", temp_string);
-    rand_val((int) atoi(temp_string));
+    cout << "Random number seed (greater than 0) ================> ";
+    cin >> temp_string;
+    rand_val(atoi(temp_string));
 
     // Prompt for alpha value
-    printf("Alpha value ========================================> ");
-    scanf("%s", temp_string);
+    cout << "Alpha value ========================================> ";
+    cin >> temp_string;
     alpha = atof(temp_string);
 
     // Prompt for N value
-    printf("N value ============================================> ");
-    scanf("%s", temp_string);
+    cout << "N value ============================================> ";
+    cin >> temp_string;
     n = atoi(temp_string);
 
     // Prompt for number of values to generate
-    printf("Number of values to generate =======================> ");
-    scanf("%s", temp_string);
+    cout << "Number of values to generate =======================> ";
+    cin >> temp_string;
     num_values = atoi(temp_string);
 
     // Output "generating" message
-    printf("-------------------------------------------------------- \n");
-    printf("-  Generating samples to file                          - \n");
-    printf("-------------------------------------------------------- \n");
+    cout << "-------------------------------------------------------- \n";
+    cout << "-  Generating samples to file                          - \n";
+    cout << "-------------------------------------------------------- \n";
 
     // Generate and output zipf random variables
-    for (i=0; i<num_values; i++)
+    for (int i = 0; i < num_values; i++)
     {
         zipf_rv = zipf(alpha, n);
-        fprintf(fp, "%d \n", zipf_rv);
+        fp << zipf_rv << "\n";
     }
 
     // Output "done" message and close the output file
-    printf("-------------------------------------------------------- \n");
-    printf("-  Done! \n");
-    printf("-------------------------------------------------------- \n");
-    fclose(fp);
+    cout << "-------------------------------------------------------- \n";
+    cout << "-  Done! \n";
+    cout << "-------------------------------------------------------- \n";
+    fp.close();
 
     return 0; // Keep the compiler happy
 }
@@ -137,40 +140,35 @@ int zipf(double alpha, int n)
     double z;                     // Uniform random number (0 < z < 1)
     double sum_prob;              // Sum of probabilities
     double zipf_value;            // Computed exponential value to be returned
-    int    i;                     // Loop counter
 
     // Compute normalization constant on first call only
-    if (first == TRUE)
-    {
-        for (i=1; i<=n; i++)
+    if (first == TRUE) {
+        for (int i = 1; i <= n; ++i)
             c = c + (1.0 / pow((double) i, alpha));
         c = 1.0 / c;
         first = FALSE;
     }
 
     // Pull a uniform random number (0 < z < 1)
-    do
-    {
+    do {
         z = rand_val(0);
-    }
-    while ((z == 0) || (z == 1));
+    } while ((z == 0) || (z == 1));
 
     // Map z to the value
     sum_prob = 0;
-    for (i=1; i<=n; i++)
-    {
+    zipf_value = 0;
+    for (int i=1; i <=n ; ++i) {
         sum_prob = sum_prob + c / pow((double) i, alpha);
-        if (sum_prob >= z)
-        {
+        if (sum_prob >= z) {
             zipf_value = i;
             break;
         }
     }
 
     // Assert that zipf_value is between 1 and N
-    assert((zipf_value >=1) && (zipf_value <= n));
+    assert((zipf_value >= 1) && (zipf_value <= n));
 
-    return(zipf_value);
+    return ((int) zipf_value);
 }
 
 //=========================================================================
@@ -187,25 +185,22 @@ double rand_val(int seed)
     const long  q =     127773;  // m div a
     const long  r =       2836;  // m mod a
     static long x;               // Random int value
-    long        x_div_q;         // x divided by q
-    long        x_mod_q;         // x modulo q
-    long        x_new;           // New x value
 
     // Set the seed if argument is non-zero and then return zero
-    if (seed > 0)
-    {
+    if (seed > 0) {
         x = seed;
         return(0.0);
     }
 
     // RNG using integer arithmetic
-    x_div_q = x / q;
-    x_mod_q = x % q;
-    x_new = (a * x_mod_q) - (r * x_div_q);
-    if (x_new > 0)
+    long x_div_q = x / q;
+    long x_mod_q = x % q;
+    long x_new = (a * x_mod_q) - (r * x_div_q);
+    if (x_new > 0) {
         x = x_new;
-    else
+    } else {
         x = x_new + m;
+    }
 
     // Return a random value between 0.0 and 1.0
     return((double) x / m);
