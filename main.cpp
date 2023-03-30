@@ -173,7 +173,7 @@ void hashMap(const vector<string>& values) {
     cout << "Value " << arg_max << " occurs " << currentMax << " times " << endl;
 }
 
-void misraGries(int k, vector<int>& incomming, int n) {
+void misraGries(int k, vector<int>& incomming) {
     // Initialize the new map
     unordered_map<int, int> freqMap;
 

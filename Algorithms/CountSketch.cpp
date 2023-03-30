@@ -63,11 +63,9 @@ public:
             a_b_hashvector.push_back(make_tuple(a,b));
         }
 
-        unsigned gseed = chrono::system_clock::now().time_since_epoch().count();
-        default_random_engine g_generator(gseed);
         for (int i=0; i < t; i++) {
-            uint64_t g_a = bitGenerator(g_generator);
-            uint64_t g_b = bitGenerator(g_generator);
+            uint64_t g_a = bitGenerator(generator);
+            uint64_t g_b = bitGenerator(generator);
             a_b_hashvector_for_g.push_back(make_tuple(g_a, g_b));
         }
     }
