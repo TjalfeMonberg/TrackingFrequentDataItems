@@ -2,8 +2,8 @@
 // Created by Tjalfe on 14-03-2023.
 //
 
-#include "CountMinSketch.cpp"
-#include "CountSketch.cpp"
+#include "../Algorithms/CountMinSketch.cpp"
+#include "../Algorithms/CountSketch.cpp"
 #include "math.h"
 #include <stdint.h>
 #include "iostream"
