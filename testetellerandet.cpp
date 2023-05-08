@@ -4,6 +4,7 @@
 
 #include "CountMinSketch.cpp"
 #include "CountSketch.cpp"
+#include "HeavyHitters.cpp"
 #include "math.h"
 #include <stdint.h>
 #include "iostream"
@@ -141,6 +142,14 @@ void notUsed() {
 }
 
 int main(){
-    makePlotFileCS(10);
+    vector<int> caidaSet = vectorizationOfDataset();
+    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), caidaSet.size());
+    for (auto x : caidaSet) {
+        newHH.updateCounters(x, 1);
+    }
+    vector<uint32_t> result = newHH.HH(-1, log(caidaSet.size()));
+    for (auto x : result) {
+        cout << x << endl;
+    }
     return 0;
 }
