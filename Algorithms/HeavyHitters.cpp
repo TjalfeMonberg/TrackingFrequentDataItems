@@ -31,23 +31,18 @@ public:
         float delta = 1/4.0;
         entryRequirement = eps*norm;
         int check = log2(universe);
-        if (log2(universe) > check) {
-            amountOfSketches = check+1;
-        }
-        else {
-            amountOfSketches = check;
-        }
+        amountOfSketches = check;
         for(int i=0; i<=amountOfSketches; i++) {
             if (i == 0) {
-                int t = 2/(eps/2);
+                int k = 2/(eps/2);
                 uint64_t intermediate = universe*universe;
                 double newIntermediate = 1.0/intermediate;
-                int k = log2(1/newIntermediate);
+                int t = log2(1/newIntermediate);
                 CountMinSketch newCM = *new CountMinSketch(t, k);
                 sketches.push_back(newCM);
             }
             else {
-                CountMinSketch newCM = *new CountMinSketch(2/(eps/2), log2(1/delta));
+                CountMinSketch newCM = *new CountMinSketch(log2(1/delta), 2/(eps/2));
                 sketches.push_back(newCM);
             }
         }
@@ -70,9 +65,7 @@ public:
     }
     void findHeavyElements(uint32_t elem, int i) {
         if (elem == -1) {
-            cout << "hehe" << endl;
             elem = highestElemInTree;
-            cout << highestElemInTree << endl;
         }
         if (i>0) {
             if (sketches[i-1].findMinElem(2*elem)>=entryRequirement) {
