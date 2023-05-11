@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <stdint.h>
+#include "../Algorithms/CountMinSketch.cpp"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ private:
     uint64_t  universe, norm;
     uint32_t highestElemInTree;
     double eps, entryRequirement;
+    int amountOfSketches;
     vector<CountMinSketch> sketches; // keeping track of every CS we work with
     vector<uint32_t> heavyHitters;
 
@@ -28,27 +30,34 @@ public:
         // Initialize all CountMinSketches
         float delta = 1/4.0;
         entryRequirement = eps*norm;
-        for(int i=0; i<log(universe); i++) {
+        int check = log2(universe);
+        if (log2(universe) > check) {
+            amountOfSketches = check+1;
+        }
+        else {
+            amountOfSketches = check;
+        }
+        for(int i=0; i<=amountOfSketches; i++) {
             if (i == 0) {
                 int t = 2/(eps/2);
                 uint64_t intermediate = universe*universe;
                 double newIntermediate = 1.0/intermediate;
-                int k = log(1/newIntermediate);
+                int k = log2(1/newIntermediate);
                 CountMinSketch newCM = *new CountMinSketch(t, k);
                 sketches.push_back(newCM);
             }
             else {
-                CountMinSketch newCM = *new CountMinSketch(2/(eps/2), log(1/delta));
+                CountMinSketch newCM = *new CountMinSketch(2/(eps/2), log2(1/delta));
                 sketches.push_back(newCM);
             }
         }
     }
 
     void updateCounters(uint32_t elem, int c) {
-        for(int i=0; i<log(universe); i++) {
+        for(int i=0; i<=amountOfSketches; i++) {
             uint32_t elemToSave = elem>>i;
             sketches[i].updateCounters(elemToSave, c);
-            if (i+1 > log(universe)) {
+            if (i == amountOfSketches) {
                 highestElemInTree = elemToSave;
             }
         }
@@ -61,7 +70,9 @@ public:
     }
     void findHeavyElements(uint32_t elem, int i) {
         if (elem == -1) {
+            cout << "hehe" << endl;
             elem = highestElemInTree;
+            cout << highestElemInTree << endl;
         }
         if (i>0) {
             if (sketches[i-1].findMinElem(2*elem)>=entryRequirement) {

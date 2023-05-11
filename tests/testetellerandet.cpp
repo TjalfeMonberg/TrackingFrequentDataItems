@@ -3,7 +3,6 @@
 //
 
 #include "../Algorithms/HeavyHitters.cpp"
-#include "../Algorithms/CountMinSketch.cpp"
 #include "../Algorithms/CountSketch.cpp"
 #include "math.h"
 #include <stdint.h>
@@ -143,11 +142,12 @@ void notUsed() {
 
 int main(){
     vector<int> caidaSet = vectorizationOfDataset();
-    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), caidaSet.size());
+    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), caidaSet[caidaSet.size()-1]);
     for (auto x : caidaSet) {
         newHH.updateCounters(x, 1);
     }
-    vector<uint32_t> result = newHH.HH(-1, log(caidaSet.size()));
+    vector<uint32_t> result = newHH.HH(-1, log2(caidaSet[caidaSet.size()-1]));
+    cout << result.size() << endl;
     for (auto x : result) {
         cout << x << endl;
     }
