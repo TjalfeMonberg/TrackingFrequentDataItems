@@ -30,7 +30,7 @@ public:
         // Initialize all CountMinSketches
         float delta = 1/4.0;
         entryRequirement = eps*norm;
-        int check = log2(universe);
+        int check = round(log2(universe));
         amountOfSketches = check;
         for(int i=0; i<=amountOfSketches; i++) {
             if (i == 0) {
@@ -50,7 +50,13 @@ public:
 
     void updateCounters(uint32_t elem, int c) {
         for(int i=0; i<=amountOfSketches; i++) {
-            uint32_t elemToSave = elem>>i;
+            uint32_t elemToSave;
+            if (elem == elem>>i) {
+                elemToSave = 0;
+            }
+            else {
+                elemToSave = elem>>i;
+            }
             sketches[i].updateCounters(elemToSave, c);
             if (i == amountOfSketches) {
                 highestElemInTree = elemToSave;
