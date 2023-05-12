@@ -37,7 +37,11 @@ sns.displot(x[x <= largest], kde=True)
 plt.show() 
 '''
 
-s= np.loadtxt(r'C:\Users\Ruben\Desktop\Uni\6. semester\Bachelorprojekt\trainingDatasets\dataset12.txt').astype(np.int64)
+path = os.path.realpath(__file__)
+dir = os.path.dirname(path)
+dir = dir.replace('plotting', 'trainingDatasets')
+os.chdir(dir)
+s= np.loadtxt('dataset12.txt').astype(np.int64)
 a = 1.2
 n = 10000000
 
