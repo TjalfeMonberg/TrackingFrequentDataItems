@@ -142,6 +142,7 @@ void notUsed() {
 
 int main(){
     vector<uint32_t> caidaSet = vectorizationOfDataset();
+    sort(caidaSet.begin(), caidaSet.end());
     HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), caidaSet[caidaSet.size()-1]);
     for (auto x : caidaSet) {
         newHH.updateCounters(x, 1);
