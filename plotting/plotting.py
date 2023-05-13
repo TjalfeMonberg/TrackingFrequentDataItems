@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import collections
 
+''''
 file = open("../plotfiles/plotFileCS.txt", "r")
 
 resArray = []
@@ -32,3 +33,10 @@ plt.bar(X_, Y_)
 for index in range(len(X_)):
   plt.text(X_[index], Y_[index], Y_[index], size = 7, ha = 'center')
 plt.show()
+'''
+
+file = open('dataset12.txt', 'r')
+
+lenth = file.read()
+
+print(len(lenth))
