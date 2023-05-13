@@ -20,7 +20,7 @@ private:
     int **counters; // Counters for the sketch itself
     vector<tuple<uint64_t, uint64_t>> a_b_hashvector; // Vector of random a and b values to be saved per array in our counters
 
-    [[nodiscard]] uint64_t customHashFunction(uint64_t a, uint64_t b, int elem) const {
+    [[nodiscard]] uint64_t customHashFunction(uint64_t a, uint64_t b, uint32_t elem) const {
         // Prime has to be bigger than the biggest number in our possible elem interval, so here 700001 fits the job
         return ((a * elem + b) % 26000003) % k;
     }
@@ -49,15 +49,6 @@ public:
             a_b_hashvector.push_back(make_tuple(a,b));
         }
 
-    }
-
-    // Destructor to free memory
-    ~CountMinSketch() {
-        for (int i=0; i < t; i++) {
-            delete[] counters[i];
-        }
-        delete[] counters;
-        // Since c++ is coded in such a way that the vector gets deleted when it's out of scope, We do not need to delete it manually
     }
 
     // As per the paper on CountSketch, elems will come in the form of (elem, c) where elem is elem to be counted, and c being by how much, given our processed data,

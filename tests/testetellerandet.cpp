@@ -3,19 +3,18 @@
 //
 
 #include "../Algorithms/HeavyHitters.cpp"
-#include "../Algorithms/CountMinSketch.cpp"
 #include "../Algorithms/CountSketch.cpp"
 #include "math.h"
 #include <stdint.h>
 #include "iostream"
 #include <chrono>
 
-vector<int> vectorizationOfDataset() {
+vector<uint32_t> vectorizationOfDataset() {
     // Loading the dataset for testing
     ifstream dataStream(R"(TrackingFrequentDataItems/dataset/CAIDAProcessed.txt)");
 
     //Vector for the values in the file
-    vector<int> processedValues;
+    vector<uint32_t> processedValues;
 
     // Temporary buffer and string stream for converting string to int.
     string temp;
@@ -47,7 +46,7 @@ void testCMS(double e, double d) {
     // Creating the CountMinSketch model
     CountMinSketch CMS = *new CountMinSketch(t, k);
 
-    vector<int> processedValues = vectorizationOfDataset();
+    vector<uint32_t> processedValues = vectorizationOfDataset();
 
     for (auto x : processedValues) {
         CMS.updateCounters(x, 1);
@@ -59,7 +58,7 @@ void testCMS(double e, double d) {
 }
 
 void makePlotFileCMS(int epoch) {
-    vector<int> processedValues = vectorizationOfDataset();
+    vector<uint32_t> processedValues = vectorizationOfDataset();
     ofstream plotFileCMS(R"(TrackingFrequentDataItems/plotfiles/plotFileCMS.txt)");
     for (int i=0; i<epoch; i++) {
         // For this plot testing we are using t value 40 and k value 200
@@ -74,7 +73,7 @@ void makePlotFileCMS(int epoch) {
 }
 
 void makePlotFileCS(int epoch) {
-    vector<int> processedValues = vectorizationOfDataset();
+    vector<uint32_t> processedValues = vectorizationOfDataset();
     ofstream plotFileCMS(R"(TrackingFrequentDataItems/plotfiles/plotFileCS.txt)");
     for (int i=0; i<epoch; i++) {
         // For this plot testing we are using t value 40 and k value 200
@@ -89,7 +88,7 @@ void makePlotFileCS(int epoch) {
 }
 
 double l2() {
-    vector<int> something = vectorizationOfDataset();
+    vector<uint32_t> something = vectorizationOfDataset();
 
     double accum = 0;
     for (double x : something) {
@@ -113,7 +112,7 @@ void testCS(double e, double d) {
 
     CountSketch CS = *new CountSketch(t, k);
 
-    vector<int> processedValues = vectorizationOfDataset();
+    vector<uint32_t> processedValues = vectorizationOfDataset();
 
     for (auto x : processedValues) {
         CS.updateCounters(x, 1);
@@ -142,12 +141,14 @@ void notUsed() {
 }
 
 int main(){
-    vector<int> caidaSet = vectorizationOfDataset();
-    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), caidaSet.size());
+    vector<uint32_t> caidaSet = vectorizationOfDataset();
+    sort(caidaSet.begin(), caidaSet.end());
+    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), caidaSet[caidaSet.size()-1]);
     for (auto x : caidaSet) {
         newHH.updateCounters(x, 1);
     }
-    vector<uint32_t> result = newHH.HH(-1, log(caidaSet.size()));
+    vector<uint32_t> result = newHH.HH(-1, log2(caidaSet[caidaSet.size()-1]));
+    cout << result.size() << endl;
     for (auto x : result) {
         cout << x << endl;
     }
