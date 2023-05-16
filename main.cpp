@@ -466,18 +466,5 @@ void createNewDataset(int amountOfLines) {
 }
 
 int main() {
-    ofstream newDataSet(R"(trainingDatasets/CustomDataset.txt)");
-
-    // Ensuring that we get different values each function calls
-    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-
-    // Setting up the generator
-    default_random_engine generator (seed);
-    uniform_int_distribution<int> distribution(1,10000);
-
-    for (int i = 0; i <= 10000000; ++i) {
-        int candidate = distribution(generator);
-        newDataSet << candidate << endl;
-    }
     return 0;
 }
