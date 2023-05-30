@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.special import zeta
 import os
 
 def createDataSet():
@@ -37,15 +36,15 @@ sns.displot(x[x <= largest], kde=True)
 plt.show() 
 '''
 
-s= np.loadtxt(r'C:\Users\Ruben\Desktop\Uni\6. semester\Bachelorprojekt\trainingDatasets\dataset12.txt').astype(np.int64)
-a = 1.2
+s= np.loadtxt(r'D:\Skrivebord\Bachelor Project\\Code\\TrackingFrequentDataItems\\trainingDatasets\dataset10.txt').astype(np.int64)
+a = 1.0
 n = 10000000
 
 
 bincount = np.bincount(s)
 k = np.arange(1, s.max() + 1)
 plt.bar(k, bincount[1:], label='sample count')
-plt.plot(k, n*(k**-a)/zeta(a), 'k.-', label='expected count')   
+plt.plot(k, n*(k**-a)/np.sum(k**-a), 'k.-', label='expected count')   
 plt.semilogy()
 plt.grid(alpha=0.4)
 plt.legend()

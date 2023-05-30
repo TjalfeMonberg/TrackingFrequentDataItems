@@ -21,8 +21,8 @@ private:
     vector<tuple<uint64_t, uint64_t>> a_b_hashvector; // Vector of random a and b values to be saved per array in our counters
     vector<tuple<uint64_t, uint64_t>> a_b_hashvector_for_g;
 
-    [[nodiscard]] int customHashFunction(uint64_t a, uint64_t b, uint32_t elem) const {
-        // Prime has to be bigger than the biggest number in our possible elem interval, so here 700001 fits the job
+    [[nodiscard]] uint64_t customHashFunction(uint64_t a, uint64_t b, uint32_t elem) const {
+        // Prime has to be bigger than the biggest number in our possible elem interval, so here 26000003 fits the job
         return ((a * elem + b) % 26000003) % k;
     }
 

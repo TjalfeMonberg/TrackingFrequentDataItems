@@ -20,29 +20,30 @@ private:
     uint64_t  universe, norm;
     uint32_t highestElemInTree;
     double eps, entryRequirement;
-    int amountOfSketches;
-    vector<CountMinSketch> sketches; // keeping track of every CS we work with
+    int amountOfSketches, counter;
+    vector<CountMinSketch*> sketches; // keeping track of every CS we work with
     vector<uint32_t> heavyHitters;
 
 
 public:
     HeavyHitters(double _eps, uint64_t _norm, uint64_t _universe) : eps(_eps), norm(_norm), universe(_universe) {
         // Initialize all CountMinSketches
-        float delta = 1/4.0;
+        double delta = 0.25;
+        counter = 0;
         entryRequirement = eps*norm;
-        int check = round(log2(universe));
+        int check = ceil(log2(universe));
         amountOfSketches = check;
         for(int i=0; i<=amountOfSketches; i++) {
             if (i == 0) {
-                int k = 2/(eps/2);
+                int k = ceil(2/(eps/2));
                 uint64_t intermediate = universe*universe;
                 double newIntermediate = 1.0/intermediate;
-                int t = log2(1/newIntermediate);
-                CountMinSketch newCM = *new CountMinSketch(t, k);
+                int t = ceil(log2(1/newIntermediate));
+                CountMinSketch* newCM = new CountMinSketch(t, k);
                 sketches.push_back(newCM);
             }
             else {
-                CountMinSketch newCM = *new CountMinSketch(log2(1/delta), 2/(eps/2));
+                CountMinSketch* newCM = new CountMinSketch(ceil(log2(1/delta)), ceil(2/(eps/2)));
                 sketches.push_back(newCM);
             }
         }
@@ -57,10 +58,7 @@ public:
             else {
                 elemToSave = elem>>i;
             }
-            sketches[i].updateCounters(elemToSave, c);
-            if (i == amountOfSketches) {
-                highestElemInTree = elemToSave;
-            }
+            sketches[i]->updateCounters(elemToSave, c);
         }
     }
 
@@ -70,19 +68,27 @@ public:
         return heavyHitters;
     }
     void findHeavyElements(uint32_t elem, int i) {
-        if (elem == -1) {
-            elem = highestElemInTree;
-        }
         if (i>0) {
-            if (sketches[i-1].findMinElem(2*elem)>=entryRequirement) {
+            if (sketches[i-1]->findMinElem(2*elem)>=entryRequirement) {
+                counter++;
                 findHeavyElements(2*elem, i-1);
             }
-            if (sketches[i-1].findMinElem(2*elem+1)>=entryRequirement) {
+            if (sketches[i-1]->findMinElem(2*elem+1)>=entryRequirement) {
+                counter++;
                 findHeavyElements(2*elem+1, i-1);
             }
         }
         else {
+            counter++;
             heavyHitters.push_back(elem);
         }
+    }
+
+    int getCounter() {
+        return counter;
+    }
+
+    void checkLowestLevel(uint32_t elem) {
+        cout << sketches[0]->findMinElem(elem) << endl;
     }
 };
