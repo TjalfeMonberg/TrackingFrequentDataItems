@@ -180,7 +180,7 @@ void averageErrorExperiment() {
     int kForCMS = ceil(2 / eps);
     int kForCS = ceil(4/pow(eps, 2)); // Is this fair? It essentially gives CS 40000 counters vs CMS 200, maybe change to be even 200.
     cout << delta << " " << tForCS << " " << tForCMS << " " << kForCMS << " " << kForCS << endl;
-    CountSketch CS = *new CountSketch(tForCS, kForCS);
+    CountSketch CS = *new CountSketch(tForCMS, kForCMS);
     CountMinSketch CMS = *new CountMinSketch(tForCMS, kForCMS);
     MisraGries MG = *new MisraGries(kForCMS);
     for (auto x : dataset) {
@@ -188,7 +188,7 @@ void averageErrorExperiment() {
         CMS.updateCounters(x, 1);
         MG.updateCounters(x, 1);
     }
-    cout << CS.findMedianElem(878) << endl;
+    cout << MG.findElem(878) << endl;
     cout << datasetAmount[878-1] << endl;
     for (auto y : dataset) {
         int CSERR = CS.findMedianElem(y)-datasetAmount[y-1];
@@ -218,20 +218,17 @@ void heavyHitterNodesVisitedMinimum() {
 void heavyHitterNodesVisitedProper() {
     vector<uint32_t> dataset1 = vectorizationOfDatasetForExperiments("dataset0850000.txt");
     ofstream countersSeen(R"(TrackingFrequentDataItems/experimentresults/heavyHittersNodesVisited.txt)");
-    vector<vector<uint32_t>> sets{dataset1};
-    int datasetCheck = 1;
-    for (auto set : sets) {
-        HeavyHitters newHH = *new HeavyHitters(0.01, set.size(), 10000);
-        for (auto x : set) {
+    for (int i=0; i < 50; i++) {
+        HeavyHitters newHH = *new HeavyHitters(0.01, dataset1.size(), 50000);
+        for (auto x : dataset1) {
             newHH.updateCounters(x, 1);
         }
-        vector<uint32_t> heavyHitters = newHH.HH(0, ceil(log2(10000)));
+        vector<uint32_t> heavyHitters = newHH.HH(0, ceil(log2(50000)));
         int currentCounter = newHH.getCounter();
         for (auto y : heavyHitters) {
             cout << y << endl;
         }
-        cout << currentCounter << endl;
-        newHH.checkLowestLevel(0);
+        countersSeen << currentCounter << endl;
     }
 }
 
@@ -356,5 +353,5 @@ void checkHH() {
 }
 
 int main(){
-    heavyHitterNodesVisitedProper();
+return 0;
 }
