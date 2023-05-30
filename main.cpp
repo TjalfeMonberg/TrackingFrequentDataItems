@@ -466,9 +466,5 @@ void createNewDataset(int amountOfLines) {
 }
 
 int main() {
-    vector<string> dataStream = tokenizeCAIDAProcessed();
-    checkIfThereAreDuplicatesInVector();
-    hashMap(dataStream);
-
     return 0;
 }
