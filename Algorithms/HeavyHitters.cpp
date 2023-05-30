@@ -50,13 +50,17 @@ public:
     }
 
     void updateCounters(uint32_t elem, int c) {
+        bool hasHitZero = false;
         for(int i=0; i<=amountOfSketches; i++) {
             uint32_t elemToSave;
-            if (elem == elem>>i) {
+            if (hasHitZero) {
                 elemToSave = 0;
             }
             else {
                 elemToSave = elem>>i;
+            }
+            if (elemToSave == 0) {
+                hasHitZero = true;
             }
             sketches[i]->updateCounters(elemToSave, c);
         }
@@ -89,6 +93,6 @@ public:
     }
 
     void checkLowestLevel(uint32_t elem) {
-        cout << sketches[0]->findMinElem(elem) << endl;
+        cout << sketches[amountOfSketches-14]->findMinElem(elem) << endl;
     }
 };

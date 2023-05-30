@@ -231,7 +231,7 @@ void heavyHitterNodesVisitedProper() {
             cout << y << endl;
         }
         cout << currentCounter << endl;
-        newHH.checkLowestLevel(1);
+        newHH.checkLowestLevel(0);
     }
 }
 
