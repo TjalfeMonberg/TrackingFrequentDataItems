@@ -112,14 +112,13 @@ void testMGCache() {
     }
 }
 void cacheSizeRunExperiment() {
-    vector<uint32_t> datasetValues = vectorizationOfDatasetForExperiments("dataset12.txt");
-    ofstream runAndQueryTimes(R"(TrackingFrequentDataItems/experimentresults/runAndQueryTimeCMS1to40.txt)");
-    ofstream runAndQueryTimesCS(R"(TrackingFrequentDataItems/experimentresults/runAndQueryTimeCS1to40.txt)");
-    ofstream runAndQueryTimesMG(R"(TrackingFrequentDataItems/experimentresults/runAndQueryTimeMG1to40.txt)");
-
-    for(int i=1; i<=200; i++) {
-        int k = 50*i;
-        int t = i;
+    vector<uint32_t> datasetValues = vectorizationOfDatasetForExperiments("dataset0850000.txt");
+    ofstream runAndQueryTimes(R"(TrackingFrequentDataItems/experimentresults/runAndQueryTimeCMS1to100.txt)");
+    ofstream runAndQueryTimesCS(R"(TrackingFrequentDataItems/experimentresults/runAndQueryTimeCS1to100.txt)");
+    ofstream runAndQueryTimesMG(R"(TrackingFrequentDataItems/experimentresults/runAndQueryTimeMG1to100.txt)");
+    int t = 20;
+    for(int i=0; i<=28; i++) {
+        int k = pow(2, i);
         CountMinSketch CMS = *new CountMinSketch(t, k);
         auto startTime = chrono::high_resolution_clock::now();
         for(auto x : datasetValues) {
@@ -149,6 +148,7 @@ void cacheSizeRunExperiment() {
         auto stopTimeMG = chrono::high_resolution_clock::now();
         auto totalTimeMG = chrono::duration_cast<chrono::milliseconds>(stopTimeMG - startTimeMG);
         runAndQueryTimesMG << totalTimeMG.count() << endl;
+        cout << "Iteration " << i << " done" << endl;
     }
 }
 void deterministicCheck() {
@@ -188,12 +188,16 @@ void averageErrorExperiment() {
         CMS.updateCounters(x, 1);
         MG.updateCounters(x, 1);
     }
-    cout << MG.findElem(878) << endl;
-    cout << datasetAmount[878-1] << endl;
-    for (auto y : dataset) {
-        int CSERR = CS.findMedianElem(y)-datasetAmount[y-1];
-        int CMSERR = CMS.findMinElem(y)-datasetAmount[y-1];
-        int MGERR = MG.findElem(y)-datasetAmount[y-1];
+    cout << MG.findElem(1) << endl;
+    cout << datasetAmount[0] << endl;
+    cout << MG.findElem(1)-datasetAmount[0] << endl;
+    cout << MG.findElem(2) << endl;
+    cout << datasetAmount[1] << endl;
+    cout << MG.findElem(2)-datasetAmount[1] << endl;
+    for (int i=1; i<=50000; i++) {
+        int CSERR = CS.findMedianElem(i)-datasetAmount[i-1];
+        int CMSERR = CMS.findMinElem(i)-datasetAmount[i-1];
+        int MGERR = MG.findElem(i)-datasetAmount[i-1];
         averageErrorCS << abs(CSERR) << endl;
         averageErrorCMS << abs(CMSERR) << endl;
         averageErrorMG << abs(MGERR) << endl;
@@ -202,12 +206,12 @@ void averageErrorExperiment() {
 
 
 void heavyHitterNodesVisitedMinimum() {
-    vector<uint32_t> caidaSet = vectorizationOfDataset();
-    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), 3735400830);
-    for (auto x : caidaSet) {
+    vector<uint32_t> dataset = vectorizationOfDatasetForExperiments("dataset0850000.txt");
+    HeavyHitters newHH = *new HeavyHitters(0.01, dataset.size(), 50000, 0);
+    for (auto x : dataset) {
         newHH.updateCounters(x, 1);
     }
-    vector<uint32_t> result = newHH.HH(0, round(log2(3735400830)));
+    vector<uint32_t> result = newHH.HH(0, round(log2(50000)));
     cout << result.size() << endl;
     for (auto x : result) {
         cout << x << endl;
@@ -218,17 +222,20 @@ void heavyHitterNodesVisitedMinimum() {
 void heavyHitterNodesVisitedProper() {
     vector<uint32_t> dataset1 = vectorizationOfDatasetForExperiments("dataset0850000.txt");
     ofstream countersSeen(R"(TrackingFrequentDataItems/experimentresults/heavyHittersNodesVisited.txt)");
-    for (int i=0; i < 50; i++) {
-        HeavyHitters newHH = *new HeavyHitters(0.01, dataset1.size(), 50000);
+    ofstream countersSeenDiff(R"(TrackingFrequentDataItems/experimentresults/heavyHittersNodesVisitedDiff.txt)");
+    for (int i=0; i < 200; i++) {
+        HeavyHitters newHH = *new HeavyHitters(0.01, dataset1.size(), 50000, 0);
+        HeavyHitters newHHDiff = *new HeavyHitters(0.01, dataset1.size(), 50000, 1);
         for (auto x : dataset1) {
             newHH.updateCounters(x, 1);
+            newHHDiff.updateCounters(x, 1);
         }
         vector<uint32_t> heavyHitters = newHH.HH(0, ceil(log2(50000)));
+        vector<uint32_t> heavyHittersDiff = newHHDiff.HH(0, ceil(log2(50000)));
         int currentCounter = newHH.getCounter();
-        for (auto y : heavyHitters) {
-            cout << y << endl;
-        }
+        int diffCounter = newHHDiff.getCounter();
         countersSeen << currentCounter << endl;
+        countersSeenDiff << diffCounter << endl;
     }
 }
 
@@ -341,7 +348,7 @@ void notUsed() {
 
 void checkHH() {
     vector<uint32_t> caidaSet = vectorizationOfDataset();
-    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), 3735400830);
+    HeavyHitters newHH = *new HeavyHitters(0.01, caidaSet.size(), 3735400830, 0);
     for (auto x : caidaSet) {
         newHH.updateCounters(x, 1);
     }
@@ -353,5 +360,5 @@ void checkHH() {
 }
 
 int main(){
-return 0;
+cacheSizeRunExperiment();
 }

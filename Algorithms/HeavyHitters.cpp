@@ -18,32 +18,38 @@ using namespace std;
 class HeavyHitters {
 private:
     uint64_t  universe, norm;
-    uint32_t highestElemInTree;
     double eps, entryRequirement;
     int amountOfSketches, counter;
     vector<CountMinSketch*> sketches; // keeping track of every CS we work with
     vector<uint32_t> heavyHitters;
+    int version;
 
 
 public:
-    HeavyHitters(double _eps, uint64_t _norm, uint64_t _universe) : eps(_eps), norm(_norm), universe(_universe) {
+    HeavyHitters(double _eps, uint64_t _norm, uint64_t _universe, int _version) : eps(_eps), norm(_norm), universe(_universe), version(_version) {
         // Initialize all CountMinSketches
         double delta = 0.25;
         counter = 0;
         entryRequirement = eps*norm;
         int check = ceil(log2(universe));
         amountOfSketches = check;
+        int k = ceil(2/(eps/2));
+        uint64_t intermediate = universe*universe;
+        double newIntermediate = 1.0/intermediate;
+        int t = ceil(log2(1/newIntermediate));
         for(int i=0; i<=amountOfSketches; i++) {
-            if (i == 0) {
-                int k = ceil(2/(eps/2));
-                uint64_t intermediate = universe*universe;
-                double newIntermediate = 1.0/intermediate;
-                int t = ceil(log2(1/newIntermediate));
-                CountMinSketch* newCM = new CountMinSketch(t, k);
-                sketches.push_back(newCM);
+            if (version == 0) {
+                if (i == 0) {
+                    CountMinSketch* newCM = new CountMinSketch(t, k);
+                    sketches.push_back(newCM);
+                }
+                else {
+                    CountMinSketch* newCM = new CountMinSketch(ceil(log2(1/delta)), ceil(2/(eps/2)));
+                    sketches.push_back(newCM);
+                }
             }
             else {
-                CountMinSketch* newCM = new CountMinSketch(ceil(log2(1/delta)), ceil(2/(eps/2)));
+                CountMinSketch* newCM = new CountMinSketch(t, k);
                 sketches.push_back(newCM);
             }
         }
